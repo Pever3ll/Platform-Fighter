@@ -467,5 +467,7 @@ MonoBehaviour:
   horizontal: 0
   rb: {fileID: 2026108785}
   accel: 1
-  maxSpeed: 4
+  maxSpeed: 6
   accelConst: 100
+  friction: 0.25
+  jumpForce: 6
