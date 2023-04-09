@@ -13,6 +13,8 @@ public class Movement : MonoBehaviour
     private float tempMaxSpeed;
     public float accelConst;
     public float friction;
+    private bool jumpPressed;
+    public float jumpForce;
 
     // Update is called once per frame
     void Update()
@@ -20,6 +22,11 @@ public class Movement : MonoBehaviour
         //Gets Inputs
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            jumpPressed = true;
+        }
+        //jumpPressed = Input.GetKeyDown(KeyCode.Space);
     }
 
     void FixedUpdate()
@@ -64,6 +71,13 @@ public class Movement : MonoBehaviour
                 rb.AddForce(new Vector2(fricForce, 0), ForceMode2D.Force);
             }
             //Debug.Log("Future Vel: " + (velocity.x + velChange) * direction);
+        }
+
+        if (jumpPressed)
+        {
+            rb.velocity = new Vector2(velocity.x, jumpForce);
+            //rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+            jumpPressed = false;
         }
     }
 }
