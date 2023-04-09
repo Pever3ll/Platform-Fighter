@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Movement : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class Movement : MonoBehaviour
     public float friction;
     private bool jumpPressed;
     public float jumpForce;
+    private InputAction a;
 
     // Update is called once per frame
     void Update()
