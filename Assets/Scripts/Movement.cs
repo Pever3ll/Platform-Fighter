@@ -8,15 +8,18 @@ public class Movement : MonoBehaviour
 {
     public float horizontal;
     private float vertical;
+    [Header("Object")]
+    public new BoxCollider2D collider;
     public Rigidbody2D rb;
     public float accel;
     public float maxSpeed;
     private float tempMaxSpeed;
     public float accelConst;
     public float friction;
-    private bool jumpPressed;
+    private bool jumpPressed = false;
     public float jumpForce;
-    private InputAction a;
+    private bool isGrounded;
+    private float groundSlope;
 
     // Update is called once per frame
     void Update()
@@ -42,6 +45,36 @@ public class Movement : MonoBehaviour
         {
             tempMaxSpeed = maxSpeed;
         }
+
+        float angle = 0;
+        Bounds bounds = collider.bounds;
+        Vector2 loc1 = bounds.min;
+        Vector2 loc2 = new Vector2(bounds.max.x, bounds.min.y);
+        RaycastHit2D ray1 = Physics2D.Raycast(loc1, Vector2.down, 0.1f);
+        RaycastHit2D ray2 = Physics2D.Raycast(loc2, Vector2.down, 0.1f);
+        // Debug.Log((bool)ray1.collider);
+        // Debug.Log((bool)ray2.collider);
+        if (ray1.collider && ray2.collider)
+        {
+            isGrounded = true;
+            groundSlope = 0;
+        }
+        else if (ray1.collider)
+        {
+            angle = -Mathf.Atan2(ray1.normal.x, ray1.normal.y)*Mathf.Rad2Deg;
+            isGrounded = true;
+        }
+        else if (ray2.collider)
+        {
+            angle = -Mathf.Atan2(ray2.normal.x, ray2.normal.y)*Mathf.Rad2Deg;
+            isGrounded = true;
+        }
+        else
+        {
+            isGrounded = false;
+        }
+        Debug.Log(isGrounded);
+
         //Debug.Log(tempMaxSpeed);
         Vector2 velocity = rb.velocity;
         float direction = velocity.x / Mathf.Abs(velocity.x);
@@ -61,9 +94,6 @@ public class Movement : MonoBehaviour
         {
             float fricForce = -direction * accelConst * friction;
             float velChange = fricForce * Time.deltaTime;
-            //Debug.Log("Fricforce: " + fricForce);
-            //Debug.Log("velChange: " + velChange);
-            //Debug.Log("velocity: " + velocity.x);
             if ((velocity.x + velChange) * direction <= 0)
             {
                 rb.velocity = new Vector2(0, velocity.y);
@@ -72,14 +102,13 @@ public class Movement : MonoBehaviour
             {
                 rb.AddForce(new Vector2(fricForce, 0), ForceMode2D.Force);
             }
-            //Debug.Log("Future Vel: " + (velocity.x + velChange) * direction);
         }
 
         if (jumpPressed)
         {
             rb.velocity = new Vector2(velocity.x, jumpForce);
-            //rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
             jumpPressed = false;
         }
     }
+
 }
