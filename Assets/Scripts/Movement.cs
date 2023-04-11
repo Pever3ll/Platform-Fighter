@@ -8,18 +8,23 @@ public class Movement : MonoBehaviour
 {
     public float horizontal;
     private float vertical;
-    [Header("Object")]
     public new BoxCollider2D collider;
     public Rigidbody2D rb;
     public float accel;
     public float maxSpeed;
-    private float tempMaxSpeed;
     public float accelConst;
     public float friction;
-    private bool jumpPressed = false;
     public float jumpForce;
+    
+    private float tempMaxSpeed;
     private bool isGrounded;
     private float groundSlope;
+    private bool jumpPressed = false;
+
+    void Start()
+    {
+        throw new NotImplementedException();
+    }
 
     // Update is called once per frame
     void Update()
@@ -46,12 +51,11 @@ public class Movement : MonoBehaviour
             tempMaxSpeed = maxSpeed;
         }
 
-        float angle = 0;
         Bounds bounds = collider.bounds;
         Vector2 loc1 = bounds.min;
         Vector2 loc2 = new Vector2(bounds.max.x, bounds.min.y);
-        RaycastHit2D ray1 = Physics2D.Raycast(loc1, Vector2.down, 0.1f);
-        RaycastHit2D ray2 = Physics2D.Raycast(loc2, Vector2.down, 0.1f);
+        RaycastHit2D ray1 = Physics2D.Raycast(loc1, Vector2.down, 0.05f);
+        RaycastHit2D ray2 = Physics2D.Raycast(loc2, Vector2.down, 0.05f);
         // Debug.Log((bool)ray1.collider);
         // Debug.Log((bool)ray2.collider);
         if (ray1.collider && ray2.collider)
@@ -61,19 +65,30 @@ public class Movement : MonoBehaviour
         }
         else if (ray1.collider)
         {
-            angle = -Mathf.Atan2(ray1.normal.x, ray1.normal.y)*Mathf.Rad2Deg;
+            groundSlope = -Mathf.Atan2(ray1.normal.x, ray1.normal.y)*Mathf.Rad2Deg;
             isGrounded = true;
         }
         else if (ray2.collider)
         {
-            angle = -Mathf.Atan2(ray2.normal.x, ray2.normal.y)*Mathf.Rad2Deg;
+            groundSlope = -Mathf.Atan2(ray2.normal.x, ray2.normal.y)*Mathf.Rad2Deg;
             isGrounded = true;
         }
         else
         {
-            isGrounded = false;
+            groundSlope = 0;
+            Vector2 down = new Vector2(0, 0.05f);
+            RaycastHit2D ray3 = Physics2D.Linecast(loc1 - down, loc2 - down);
+            if (ray3.collider)
+            {
+                isGrounded = true;
+            }
+            else
+            {
+                isGrounded = false;
+            }
         }
-        Debug.Log(isGrounded);
+        // Debug.Log(isGrounded);
+        // Debug.Log(angle);
 
         //Debug.Log(tempMaxSpeed);
         Vector2 velocity = rb.velocity;
