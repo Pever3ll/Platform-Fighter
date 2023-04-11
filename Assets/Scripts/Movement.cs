@@ -21,10 +21,6 @@ public class Movement : MonoBehaviour
     private float groundSlope;
     private bool jumpPressed = false;
 
-    void Start()
-    {
-        throw new NotImplementedException();
-    }
 
     // Update is called once per frame
     void Update()
@@ -87,35 +83,68 @@ public class Movement : MonoBehaviour
                 isGrounded = false;
             }
         }
-        // Debug.Log(isGrounded);
-        // Debug.Log(angle);
-
-        //Debug.Log(tempMaxSpeed);
+        // Debug.Log((Vector2)(Quaternion.Euler(0,0,groundSlope)*Vector2.right));
+        
         Vector2 velocity = rb.velocity;
         float direction = velocity.x / Mathf.Abs(velocity.x);
+        Vector2 slopeVector = groundSlope == 0 ? Vector2.right
+            : -Vector2.Perpendicular(ray1.collider ? ray1.normal : ray2.normal);
         
         //Horizontal Movement
-        rb.AddForce(new Vector2(horizontal * accel * accelConst,0), ForceMode2D.Force);
+        // rb.AddForce(new Vector2(horizontal * accel * accelConst,0), ForceMode2D.Force);
+        rb.AddForce(slopeVector * (horizontal * accel * accelConst), ForceMode2D.Force);
         //Checks for horizontal speed
-        if (Mathf.Abs(rb.velocity.x) >= tempMaxSpeed)
+        //Debug.Log(slopeVector * (-Physics2D.gravity.y * rb.gravityScale * Mathf.Sin(groundSlope)));
+        if (groundSlope == 0)
         {
-            //Sets to terminal velocity
-            rb.velocity = new Vector2(direction * tempMaxSpeed, velocity.y);
-            rb.AddForce(new Vector2(-direction * accel * accelConst * Mathf.Abs(horizontal),0), ForceMode2D.Force);
+            if (Mathf.Abs(velocity.x) >= tempMaxSpeed)
+            {
+                //Sets to terminal velocity
+                rb.velocity = new Vector2(direction * tempMaxSpeed, velocity.y);
+                rb.AddForce(new Vector2(-direction * accel * accelConst * Mathf.Abs(horizontal),0), ForceMode2D.Force);
+            }
         }
+        else
+        {
+            
+            if (velocity.magnitude >= tempMaxSpeed)
+            {
+                //Sets to terminal velocity
+                rb.velocity = slopeVector * (tempMaxSpeed * direction);
+                // rb.AddForce(new Vector2(-direction * accel * accelConst * Mathf.Abs(horizontal),0), ForceMode2D.Force);
+                rb.AddForce(slopeVector * (-direction * accel * accelConst * Mathf.Abs(horizontal)), ForceMode2D.Force);
+            }
+            rb.AddForce(slopeVector * (-Physics2D.gravity.y * rb.gravityScale * Mathf.Sin(groundSlope*Mathf.Deg2Rad)));
+            //rb.AddForce(-Physics2D.gravity * rb.gravityScale);
+        }
+        
+        Debug.Log(velocity.magnitude);
         
         //Friction
         if (horizontal == 0 && velocity.x != 0)
         {
-            float fricForce = -direction * accelConst * friction;
-            float velChange = fricForce * Time.deltaTime;
-            if ((velocity.x + velChange) * direction <= 0)
+            if (isGrounded)
             {
-                rb.velocity = new Vector2(0, velocity.y);
-            }
-            else
-            {
-                rb.AddForce(new Vector2(fricForce, 0), ForceMode2D.Force);
+                Vector2 fricForce = slopeVector * (-direction * accelConst * friction);
+                Vector2 futureVel = velocity + (fricForce * (Time.deltaTime * direction));
+                if (futureVel.x <= 0 || futureVel.y <= 0)
+                {
+                    rb.velocity = Vector2.zero;
+                }
+                else
+                {
+                    rb.AddForce(fricForce, ForceMode2D.Force);
+                }
+                /*float fricForce = -direction * accelConst * friction;
+                float velChange = fricForce * Time.deltaTime;
+                if ((velocity.x + velChange) * direction <= 0)
+                {
+                    rb.velocity = new Vector2(0, velocity.y);
+                }
+                else
+                {
+                    rb.AddForce(new Vector2(fricForce, 0), ForceMode2D.Force);
+                }*/
             }
         }
 
