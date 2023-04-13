@@ -4,7 +4,6 @@
     <list default="true" id="9e224fba-8b80-462d-a71f-e35dc9a7167c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Platform Fighter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Platform Fighter/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Movement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Movement.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/default-2021.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/default-2021.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,6 +90,7 @@
       <workItem from="1681017008166" duration="3230000" />
       <workItem from="1681063377799" duration="13416000" />
       <workItem from="1681173654347" duration="11547000" />
+      <workItem from="1681358285233" duration="3940000" />
     </task>
     <task id="LOCAL-00001" summary="Added notes">
       <created>1680743071633</created>

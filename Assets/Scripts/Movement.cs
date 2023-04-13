@@ -20,6 +20,7 @@ public class Movement : MonoBehaviour
     private bool isGrounded;
     private float groundSlope;
     private bool jumpPressed = false;
+    private bool wasGrounded;
 
 
     // Update is called once per frame
@@ -117,8 +118,14 @@ public class Movement : MonoBehaviour
             rb.AddForce(slopeVector * (-Physics2D.gravity.y * rb.gravityScale * Mathf.Sin(groundSlope*Mathf.Deg2Rad)));
             //rb.AddForce(-Physics2D.gravity * rb.gravityScale);
         }
+
+        if (!isGrounded && wasGrounded)
+        {
+            Vector2 loc = direction > 0 ? loc1 : loc2;
+            Debug.Log(loc);
+        }
         
-        Debug.Log(velocity.magnitude);
+        //Debug.Log(velocity.magnitude);
         
         //Friction
         if (horizontal == 0 && velocity.x != 0)
@@ -126,8 +133,8 @@ public class Movement : MonoBehaviour
             if (isGrounded)
             {
                 Vector2 fricForce = slopeVector * (-direction * accelConst * friction);
-                Vector2 futureVel = velocity + (fricForce * (Time.deltaTime * direction));
-                if (futureVel.x <= 0 || futureVel.y <= 0)
+                Vector2 futureVel = (velocity + fricForce * Time.deltaTime) * direction;
+                if (futureVel.x <= 0 || futureVel.y < 0)
                 {
                     rb.velocity = Vector2.zero;
                 }
@@ -135,6 +142,7 @@ public class Movement : MonoBehaviour
                 {
                     rb.AddForce(fricForce, ForceMode2D.Force);
                 }
+                
                 /*float fricForce = -direction * accelConst * friction;
                 float velChange = fricForce * Time.deltaTime;
                 if ((velocity.x + velChange) * direction <= 0)
@@ -151,8 +159,11 @@ public class Movement : MonoBehaviour
         if (jumpPressed)
         {
             rb.velocity = new Vector2(velocity.x, jumpForce);
+            groundSlope = 0;
             jumpPressed = false;
         }
+
+        wasGrounded = isGrounded;
     }
 
 }
