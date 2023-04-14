@@ -21,6 +21,7 @@ public class Movement : MonoBehaviour
     private float groundSlope;
     private bool jumpPressed = false;
     private bool wasGrounded;
+    private float prevGroundSlope;
 
 
     // Update is called once per frame
@@ -115,8 +116,8 @@ public class Movement : MonoBehaviour
                 // rb.AddForce(new Vector2(-direction * accel * accelConst * Mathf.Abs(horizontal),0), ForceMode2D.Force);
                 rb.AddForce(slopeVector * (-direction * accel * accelConst * Mathf.Abs(horizontal)), ForceMode2D.Force);
             }
-            rb.AddForce(slopeVector * (-Physics2D.gravity.y * rb.gravityScale * Mathf.Sin(groundSlope*Mathf.Deg2Rad)));
-            //rb.AddForce(-Physics2D.gravity * rb.gravityScale);
+            //rb.AddForce(slopeVector * (-Physics2D.gravity.y * rb.gravityScale * Mathf.Sin(groundSlope*Mathf.Deg2Rad)));
+            rb.AddForce(-Physics2D.gravity * rb.gravityScale);
         }
 
         if (!isGrounded && wasGrounded)
@@ -164,6 +165,7 @@ public class Movement : MonoBehaviour
         }
 
         wasGrounded = isGrounded;
+        prevGroundSlope = groundSlope;
     }
 
 }
