@@ -48,34 +48,44 @@ public class Movement : MonoBehaviour
         {
             tempMaxSpeed = maxSpeed;
         }
+        //Get Vel dir
+        Vector2 velocity = rb.velocity;
+        float direction = velocity.x / Mathf.Abs(velocity.x);
 
         Bounds bounds = collider.bounds;
-        Vector2 loc1 = bounds.min;
-        Vector2 loc2 = new Vector2(bounds.max.x, bounds.min.y);
-        RaycastHit2D ray1 = Physics2D.Raycast(loc1, Vector2.down, 0.05f);
-        RaycastHit2D ray2 = Physics2D.Raycast(loc2, Vector2.down, 0.05f);
+        Vector2 locLeft = bounds.min;
+        Vector2 locRight = new Vector2(bounds.max.x, bounds.min.y);
+        RaycastHit2D rayLeft = Physics2D.Raycast(locLeft, Vector2.down, 0.05f);
+        RaycastHit2D rayRight = Physics2D.Raycast(locRight, Vector2.down, 0.05f);
+        Debug.DrawRay(locRight, Vector2.down * 0.05f, Color.blue, Time.deltaTime);
+        Debug.DrawRay(locLeft, Vector2.down * 0.05f, Color.blue, Time.deltaTime);
         // Debug.Log((bool)ray1.collider);
         // Debug.Log((bool)ray2.collider);
-        if (ray1.collider && ray2.collider)
+        if (rayLeft.collider && rayRight.collider)
         {
             isGrounded = true;
             groundSlope = 0;
         }
-        else if (ray1.collider)
+        else if (rayLeft.collider)
         {
-            groundSlope = -Mathf.Atan2(ray1.normal.x, ray1.normal.y)*Mathf.Rad2Deg;
+            groundSlope = -Mathf.Atan2(rayLeft.normal.x, rayLeft.normal.y)*Mathf.Rad2Deg;
+            groundSlope = groundSlope < 0 ? groundSlope : 0;
+            // Debug.DrawRay(locLeft, Vector2.down * 0.05f, Color.blue, 0.5f);
             isGrounded = true;
         }
-        else if (ray2.collider)
+        else if (rayRight.collider)
         {
-            groundSlope = -Mathf.Atan2(ray2.normal.x, ray2.normal.y)*Mathf.Rad2Deg;
+            groundSlope = -Mathf.Atan2(rayRight.normal.x, rayRight.normal.y)*Mathf.Rad2Deg;
+            groundSlope = groundSlope > 0 ? groundSlope : 0;
+            // Debug.DrawRay(locRight, Vector2.down * 0.05f, Color.blue, 0.5f);
             isGrounded = true;
         }
         else
         {
             groundSlope = 0;
             Vector2 down = new Vector2(0, 0.05f);
-            RaycastHit2D ray3 = Physics2D.Linecast(loc1 - down, loc2 - down);
+            RaycastHit2D ray3 = Physics2D.Linecast(locLeft - down, locRight - down);
+            Debug.DrawLine(locLeft - down, locRight - down, Color.blue, Time.deltaTime);
             if (ray3.collider)
             {
                 isGrounded = true;
@@ -87,29 +97,34 @@ public class Movement : MonoBehaviour
         }
         // Debug.Log((Vector2)(Quaternion.Euler(0,0,groundSlope)*Vector2.right));
         
-        Vector2 velocity = rb.velocity;
-        float direction = velocity.x / Mathf.Abs(velocity.x);
+        //Get Slope vector
         Vector2 slopeVector = groundSlope == 0 ? Vector2.right
-            : -Vector2.Perpendicular(ray1.collider ? ray1.normal : ray2.normal);
+            : -Vector2.Perpendicular(rayLeft.collider ? rayLeft.normal : rayRight.normal);
         
         //Horizontal Movement
         // rb.AddForce(new Vector2(horizontal * accel * accelConst,0), ForceMode2D.Force);
         rb.AddForce(slopeVector * (horizontal * accel * accelConst), ForceMode2D.Force);
         //Checks for horizontal speed
-        //Debug.Log(slopeVector * (-Physics2D.gravity.y * rb.gravityScale * Mathf.Sin(groundSlope)));
         if (groundSlope == 0)
         {
-            if (Mathf.Abs(velocity.x) >= tempMaxSpeed)
+            //Debug.Log(prevGroundSlope);
+            
+            if (prevGroundSlope != 0 && !jumpPressed)
+            {
+                //Debug.Log("yo");
+                rb.velocity = new Vector2(direction * rb.velocity.magnitude, 0);
+            }
+            if (Mathf.Abs(rb.velocity.x) >= tempMaxSpeed)
             {
                 //Sets to terminal velocity
-                rb.velocity = new Vector2(direction * tempMaxSpeed, velocity.y);
-                rb.AddForce(new Vector2(-direction * accel * accelConst * Mathf.Abs(horizontal),0), ForceMode2D.Force);
+                rb.velocity = new Vector2(direction * tempMaxSpeed, rb.velocity.y);
+                rb.AddForce(new Vector2(-direction * accel * accelConst * Mathf.Abs(horizontal), 0), ForceMode2D.Force);
             }
         }
         else
         {
             
-            if (velocity.magnitude >= tempMaxSpeed)
+            if (rb.velocity.magnitude >= tempMaxSpeed)
             {
                 //Sets to terminal velocity
                 rb.velocity = slopeVector * (tempMaxSpeed * direction);
@@ -119,22 +134,16 @@ public class Movement : MonoBehaviour
             //rb.AddForce(slopeVector * (-Physics2D.gravity.y * rb.gravityScale * Mathf.Sin(groundSlope*Mathf.Deg2Rad)));
             rb.AddForce(-Physics2D.gravity * rb.gravityScale);
         }
-
-        if (!isGrounded && wasGrounded)
-        {
-            Vector2 loc = direction > 0 ? loc1 : loc2;
-            Debug.Log(loc);
-        }
         
         //Debug.Log(velocity.magnitude);
         
         //Friction
-        if (horizontal == 0 && velocity.x != 0)
+        if (horizontal == 0 && rb.velocity.x != 0)
         {
             if (isGrounded)
             {
                 Vector2 fricForce = slopeVector * (-direction * accelConst * friction);
-                Vector2 futureVel = (velocity + fricForce * Time.deltaTime) * direction;
+                Vector2 futureVel = (rb.velocity + fricForce * Time.deltaTime) * direction;
                 if (futureVel.x <= 0 || futureVel.y < 0)
                 {
                     rb.velocity = Vector2.zero;
@@ -157,15 +166,34 @@ public class Movement : MonoBehaviour
             }
         }
 
+        //Run off force to stick player to ground
+        if (!isGrounded && wasGrounded && !jumpPressed)
+        {
+            if (prevGroundSlope == 0)
+            {
+                Vector2 loc = (Vector2)bounds.center - (new Vector2(bounds.extents.x * direction, bounds.extents.y));
+                RaycastHit2D hit = Physics2D.Raycast(loc, Vector2.down, 0.6f);
+                Debug.DrawRay(loc, Vector2.down * 0.6f, Color.red, 0.6f);
+                //rb.AddForce(-hit.normal, ForceMode2D.Impulse);
+                //Debug.Log("yo");
+                //Debug.Log(-hit.normal);
+            }
+            else
+            {
+                
+            }
+        }
+        
         if (jumpPressed)
         {
-            rb.velocity = new Vector2(velocity.x, jumpForce);
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             groundSlope = 0;
             jumpPressed = false;
         }
 
         wasGrounded = isGrounded;
         prevGroundSlope = groundSlope;
+        
     }
 
 }
