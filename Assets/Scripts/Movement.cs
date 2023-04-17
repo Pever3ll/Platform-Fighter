@@ -110,7 +110,7 @@ public class Movement : MonoBehaviour
         }
         
         //Run off force to stick player to ground
-        if (!isGrounded && wasGrounded && !hasJumped && prevGroundSlope == 0)
+        if (!isGrounded && wasGrounded && !hasJumped && (prevGroundSlope * direction <= 0))
         {
             var loc = (Vector2)bounds.center - new Vector2(bounds.extents.x * direction, bounds.extents.y);
             var hit = Physics2D.Raycast(loc, Vector2.down, 0.3f);
