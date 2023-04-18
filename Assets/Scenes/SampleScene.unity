@@ -442,7 +442,7 @@ GameObject:
   - component: {fileID: 2026108782}
   - component: {fileID: 2026108785}
   - component: {fileID: 2026108786}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
