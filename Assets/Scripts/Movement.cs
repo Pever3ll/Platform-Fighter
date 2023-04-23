@@ -60,21 +60,23 @@ public class Movement : MonoBehaviour
         //Get Vel dir
         Vector2 velocity = rb.velocity;
         float direction = velocity.x / Mathf.Abs(velocity.x);
-        if (direction != direction) direction = 0;
+        if (float.IsNaN(direction)) direction = 0;
         
+        // Fires two rays at bottom corners
+        float checkDist = 0.05f;
         Bounds bounds = collider.bounds;
         Vector2 locLeft = bounds.min;
         Vector2 locRight = new Vector2(bounds.max.x, bounds.min.y);
-        RaycastHit2D rayLeft = Physics2D.Raycast(locLeft, Vector2.down, 0.05f);
-        RaycastHit2D rayRight = Physics2D.Raycast(locRight, Vector2.down, 0.05f);
-        Debug.DrawRay(locRight, Vector2.down * 0.05f, Color.blue, Time.deltaTime);
-        Debug.DrawRay(locLeft, Vector2.down * 0.05f, Color.blue, Time.deltaTime);
-        
+        RaycastHit2D rayLeft = Physics2D.Raycast(locLeft, Vector2.down, checkDist);
+        RaycastHit2D rayRight = Physics2D.Raycast(locRight, Vector2.down, checkDist);
+        Debug.DrawRay(locRight, Vector2.down * checkDist, Color.blue, Time.deltaTime);
+        Debug.DrawRay(locLeft, Vector2.down * checkDist, Color.blue, Time.deltaTime);
+        //if both rays hit then slope = 0
         if (rayLeft.collider && rayRight.collider)
         {
             isGrounded = true;
             groundSlope = 0;
-        }
+        }//if one ray is hit, then it takes the angle of that point
         else if (rayLeft.collider)
         {
             groundSlope = -Mathf.Atan2(rayLeft.normal.x, rayLeft.normal.y)*Mathf.Rad2Deg;
@@ -86,11 +88,11 @@ public class Movement : MonoBehaviour
             groundSlope = -Mathf.Atan2(rayRight.normal.x, rayRight.normal.y)*Mathf.Rad2Deg;
             groundSlope = groundSlope > 0 ? groundSlope : 0;
             isGrounded = true;
-        }
+        }//if none are hit, linecast to check if there is ground underneath
         else
         {
             groundSlope = 0;
-            Vector2 down = new Vector2(0, 0.05f);
+            Vector2 down = new Vector2(0, checkDist);
             RaycastHit2D ray3 = Physics2D.Linecast(locLeft - down, locRight - down);
             Debug.DrawLine(locLeft - down, locRight - down, Color.blue, Time.deltaTime);
             if (ray3.collider)
@@ -104,10 +106,6 @@ public class Movement : MonoBehaviour
         }
         // Debug.Log((Vector2)(Quaternion.Euler(0,0,groundSlope)*Vector2.right));
 
-        if (groundSlope < 0)
-        {
-            ;
-        }
         
         //Run off force to stick player to ground
         if (!isGrounded && wasGrounded && !hasJumped && (prevGroundSlope * direction <= 0))
@@ -118,8 +116,8 @@ public class Movement : MonoBehaviour
             if (hit.collider)
             {
                 groundSlope = -Mathf.Atan2(hit.normal.x, hit.normal.y) * Mathf.Rad2Deg;
-                rb.position -= (loc - hit.centroid);
-                Debug.DrawRay(hit.centroid, hit.normal, Color.cyan, 1);
+                rb.position -= (loc - hit.point);
+                Debug.DrawRay(hit.point, hit.normal, Color.cyan, 1);
                 isGrounded = true;
                 Vector2 dirVec = -Vector2.Perpendicular(hit.normal);
                 rb.velocity = dirVec * rb.velocity.x;
@@ -141,6 +139,7 @@ public class Movement : MonoBehaviour
             if (prevGroundSlope != 0 && !hasJumped)
             {
                 rb.velocity = new Vector2(direction * rb.velocity.magnitude, 0);
+                //isGrounded = true;
             }
             if (Mathf.Abs(rb.velocity.x) >= tempMaxSpeed)
             {
@@ -151,9 +150,9 @@ public class Movement : MonoBehaviour
         }
         else
         {
-            if (rb.velocity.normalized * direction != slopeVector)
+            if (prevGroundSlope != groundSlope && rb.velocity.normalized * direction != slopeVector)
             {
-                rb.velocity = slopeVector * rb.velocity.magnitude;
+                rb.velocity = slopeVector * (direction * rb.velocity.magnitude);
             }
             if (rb.velocity.magnitude >= tempMaxSpeed)
             {
