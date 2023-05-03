@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Movement : MonoBehaviour
+public class MovementOld : MonoBehaviour
 {
     private float _horizontal;
     private float _tempMaxSpeed;
@@ -23,7 +23,6 @@ public class Movement : MonoBehaviour
     [SerializeField] private float accelConst;
     [SerializeField] private float friction;
     [SerializeField] private float jumpForce;
-
 
     // Update is called once per frame
     void Update()
@@ -49,9 +48,10 @@ public class Movement : MonoBehaviour
             _tempMaxSpeed = maxSpeed;
         }
         
-        Debug.Log(Physics2D.Raycast(new Vector2(0, -1), Vector2.up, 2).normal);
-        Debug.DrawRay(new Vector2(0, -1), Vector2.up * 2, Color.blue, Time.deltaTime);
-        Debug.DrawRay(Physics2D.Raycast(new Vector2(0, -1), Vector2.up, 2).point, Vector3.left, Color.green, Time.deltaTime);
+        // Debug.Log(Physics2D.Raycast(new Vector2(0, -1), Vector2.up, 2).normal);
+        // Debug.DrawRay(new Vector2(0, -1), Vector2.up * 2, Color.blue, Time.deltaTime);
+        // Debug.DrawRay(Physics2D.Raycast(new Vector2(0, -1), Vector2.up, 2).point, Vector3.left, Color.green, Time.deltaTime);
+        
         
         //Get Vel dir
         Vector2 velocity = rb.velocity;
@@ -65,13 +65,17 @@ public class Movement : MonoBehaviour
         Vector2 locRight = new Vector2(bounds.max.x, bounds.min.y);
         RaycastHit2D rayLeft = Physics2D.Raycast(locLeft, Vector2.down, checkDist);
         RaycastHit2D rayRight = Physics2D.Raycast(locRight, Vector2.down, checkDist);
-        Debug.DrawRay(locRight, Vector2.down * checkDist, Color.blue, Time.deltaTime);
-        Debug.DrawRay(locLeft, Vector2.down * checkDist, Color.blue, Time.deltaTime);
+        Debug.DrawRay(locRight, Vector2.down * checkDist, Color.blue, Time.deltaTime, false);
+        Debug.DrawRay(locLeft, Vector2.down * checkDist, Color.blue, Time.deltaTime, false);
         //if both rays hit then slope = 0
         if (rayLeft.collider && rayRight.collider)
         {
             _isGrounded = true;
             _groundSlope = 0;
+            Debug.Log("Down: " + rayLeft.distance);
+            Debug.Log("Up: " + (bool)Physics2D.Raycast(locLeft - new Vector2(0, rayLeft.distance - 0.0000001f), Vector2.up, checkDist).collider);
+            Debug.DrawRay(locLeft - new Vector2(0, rayLeft.distance - 0.0000001f), Vector2.up * checkDist , Color.cyan, Time.deltaTime, false);
+            Debug.Log("Touch: " + collider.OverlapPoint(rayLeft.point));
         }//if one ray is hit, then it takes the angle of that point
         else if (rayLeft.collider)
         {
@@ -84,6 +88,7 @@ public class Movement : MonoBehaviour
             _groundSlope = -Mathf.Atan2(rayRight.normal.x, rayRight.normal.y)*Mathf.Rad2Deg;
             _groundSlope = _groundSlope > 0 ? _groundSlope : 0;
             _isGrounded = true;
+            Debug.Log(rayRight.collider.GetShapeHash());
         }//if none are hit, linecast to check if there is ground underneath
         else
         {

@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="9e224fba-8b80-462d-a71f-e35dc9a7167c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Platform Fighter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Platform Fighter/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Movement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Movement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Movement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/MovementOld.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Movement.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/MovementOld.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/default-2021.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/default-2021.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,7 +17,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6675691ad5424f8f878786c0c92e44ae3a00/cb/ce8f9f32/NativeInputSystem.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f712b1dc50b4468388b9c5f95d0d0eaf159e00/c6/f11174c6/UnitySynchronizationContext.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f712b1dc50b4468388b9c5f95d0d0eaf159e00/e9/efdb3d9f/Debug.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Movement2.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/MovementOld.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.inputsystem@1.5.1/InputSystem/Actions/InputAction.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -46,7 +48,7 @@
 }</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor &amp; Play">
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\2021.3.23f1\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\2021.3.24f1\Editor\Unity.exe" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath &quot;D:\Program Files\Unity\Projects\Platform Fighter&quot; -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="D:\Program Files\Unity\Projects\Platform Fighter" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -54,7 +56,7 @@
       <method v="2" />
     </configuration>
     <configuration name="UnitTests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\2021.3.23f1\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\2021.3.24f1\Editor\Unity.exe" />
       <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath &quot;D:\Program Files\Unity\Projects\Platform Fighter&quot; -testResults Logs/results.xml -testPlatform EditMode -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="D:\Program Files\Unity\Projects\Platform Fighter" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -99,7 +101,11 @@
       <workItem from="1681609068935" duration="29967000" />
       <workItem from="1682187767188" duration="4512000" />
       <workItem from="1682560163841" duration="3792000" />
-      <workItem from="1682730029698" duration="538000" />
+      <workItem from="1682730029698" duration="1527000" />
+      <workItem from="1682880482305" duration="439000" />
+      <workItem from="1682881776135" duration="3503000" />
+      <workItem from="1682889041980" duration="1171000" />
+      <workItem from="1683084551899" duration="3176000" />
     </task>
     <task id="LOCAL-00001" summary="Added notes">
       <created>1680743071633</created>
