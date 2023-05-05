@@ -75,7 +75,7 @@ public class MovementOld : MonoBehaviour
             Debug.Log("Down: " + rayLeft.distance);
             Debug.Log("Up: " + (bool)Physics2D.Raycast(locLeft - new Vector2(0, rayLeft.distance - 0.0000001f), Vector2.up, checkDist).collider);
             Debug.DrawRay(locLeft - new Vector2(0, rayLeft.distance - 0.0000001f), Vector2.up * checkDist , Color.cyan, Time.deltaTime, false);
-            Debug.Log("Touch: " + collider.OverlapPoint(rayLeft.point));
+            Debug.Log("Touch: " + rayLeft.collider.OverlapPoint(rayLeft.point - new Vector2(0, 0.0000001f)));
         }//if one ray is hit, then it takes the angle of that point
         else if (rayLeft.collider)
         {
